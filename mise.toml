@@ -1,0 +1,23 @@
+# Node.js 24 is provided by the system on NixOS because mise cannot use the
+# prebuilt binary without nix-ld. On another system, run `mise use node@24`.
+# The tasks below work with any Node.js 24 on PATH.
+
+[tasks.install]
+description = "Install frontend dependencies from the lockfile"
+run = "npm ci"
+
+[tasks.dev]
+description = "Run the Vite development server"
+run = "npm run dev"
+
+[tasks.build]
+description = "Build the production bundle into dist/"
+run = "npm run build"
+
+[tasks.preview]
+description = "Preview the production bundle locally"
+run = "npm run preview"
+
+[tasks.deploy]
+description = "Build and deploy to Cloudflare Workers"
+run = "npm run deploy"

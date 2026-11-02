@@ -4,23 +4,43 @@ Website katalog Citra Production (Vue 3 + Vite) yang tersambung ke backend Larav
 
 ## Menjalankan
 
-1. **Backend (Docker)** — di folder backend:
-   ```
-   docker compose up --build
-   docker compose exec app php artisan db:seed --force
-   docker compose exec -it app php artisan admin:create "Nama Admin" email@contoh.com
-   ```
-   Backend berjalan di `http://localhost:8080`.
-2. **Frontend** — di folder ini:
-   ```
-   npm install
-   copy .env.example .env.local
-   npm run dev
-   ```
-   Buka `http://localhost:5173`. Jika alamat backend berbeda, ubah `VITE_API_BASE_URL` di `.env.local`
-   (default `http://localhost:8080/api/v1`) lalu jalankan ulang `npm run dev`.
+Backend, dari folder `../backend`:
 
-Admin: buka `http://localhost:5173/#/admin`, masuk dengan email & password admin.
+```bash
+mise install
+mise run setup
+mise run db:up
+mise run serve
+```
+
+API berjalan di `http://localhost:8000`. Untuk full stack container, `mise run stack` menjalankan API di `http://localhost:8080`.
+
+Frontend, dari folder ini:
+
+```bash
+mise install
+mise run install
+cp .env.example .env.local
+mise run dev
+```
+
+Buka `http://localhost:5173`. Jika alamat backend berbeda, ubah `VITE_API_BASE_URL` di `.env.local`. Nilai default `http://localhost:8080/api/v1`; untuk API lokal dari `mise run serve`, gunakan `http://localhost:8000/api/v1`.
+
+Admin: buka `http://localhost:5173/#/admin`, masuk dengan email dan password admin.
+
+## Build dan deploy
+
+```bash
+mise run build
+```
+
+Hasil build ada di `dist/`. Untuk produksi, `.env.production` mengarahkan frontend ke `https://cp-api.atalariq.dev/api/v1`. Deploy memakai Cloudflare Workers static assets:
+
+```bash
+npx wrangler deploy
+```
+
+Domain produksi: `https://cp.atalariq.dev`.
 
 ## Catatan perilaku (mengikuti aturan API)
 
