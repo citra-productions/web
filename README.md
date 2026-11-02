@@ -7,8 +7,9 @@ Website katalog Citra Production (Vue 3 + Vite) yang tersambung ke backend Larav
 Backend, dari folder `../backend`:
 
 ```bash
-mise install
+mise run dev:image
 mise run setup
+mise run seed
 mise run db:up
 mise run serve
 ```
@@ -17,8 +18,10 @@ API berjalan di `http://localhost:8000`. Untuk full stack container, `mise run s
 
 Frontend, dari folder ini:
 
+Pastikan Node.js 24 tersedia. Di NixOS gunakan Node dari sistem; di sistem lain
+jalankan `mise use node@24`.
+
 ```bash
-mise install
 mise run install
 cp .env.example .env.local
 mise run dev
