@@ -1,4 +1,1 @@
-{ "name":"citra-production","private":true,"version":"1.0.0","type":"module",
-  "scripts":{"dev":"vite","build":"vite build","preview":"vite preview"},
-  "dependencies":{"vue":"^3.5.0","vue-router":"^4.5.0"},
-  "devDependencies":{"@vitejs/plugin-vue":"^5.2.0","vite":"^6.0.0"} }
+{"name":"citra-production","private":true,"version":"1.0.0","type":"module","scripts":{"dev":"vite","build":"vite build","preview":"vite preview","deploy":"npm run build && wrangler deploy"},"dependencies":{"vue":"^3.5.0","vue-router":"^4.5.0"},"devDependencies":{"@vitejs/plugin-vue":"^5.2.0","vite":"^6.0.0","wrangler":"^4.156.1"}}
