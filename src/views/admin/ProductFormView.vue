@@ -19,6 +19,7 @@ const form = reactive({
   title: existing?.title || '', priceMin: existing?.price_min ?? '', priceMax: existing?.price_max ?? '',
   categoryId: existing?.category_id ?? '', packagingIds: [...(existing?.packaging_ids || [])],
   description: existing?.description || '', published: existing ? existing.is_published : true,
+  featured: existing ? !!existing.is_featured : false,
 })
 // Foto: {key, id?, src, blob?, alt, origAlt}. id = sudah ada di server; blob = baru, diunggah saat "simpan".
 // Alt disimpan per foto; origAlt dipakai untuk tahu apakah alt perlu dikirim ulang.
@@ -66,7 +67,7 @@ async function save() {
   const hasMin = form.priceMin !== '' && form.priceMin !== null
   const min = hasMin ? Number(form.priceMin) : null
   const max2 = hasMin ? (form.priceMax === '' || form.priceMax === null ? min : Number(form.priceMax)) : null // harga tunggal = rentang min..min
-  const body = { title: t, description: form.description.trim() || null, category_id: form.categoryId || null, price_min: min, price_max: max2, packaging_ids: form.packagingIds }
+  const body = { title: t, description: form.description.trim() || null, category_id: form.categoryId || null, price_min: min, price_max: max2, packaging_ids: form.packagingIds, is_featured: form.featured }
   if (existing) body.is_published = form.published
   saving.value = true
   try {
@@ -127,6 +128,8 @@ const back = () => router.push({ name: 'admin-products' })
         <p class="fnh">Alt diisi terpisah untuk tiap foto. Bila dikosongkan, dipakai nama produk.</p>
       </template>
       <label class="chk"><input v-model="form.published" type="checkbox" /> Tayangkan produk di katalog</label>
+      <label class="chk"><input v-model="form.featured" type="checkbox" /> Tampilkan di beranda</label>
+      <p class="fnh">Produk pilihan tampil di bagian “Produk Pilihan” pada beranda. Hanya produk yang tayang yang muncul di sana.</p>
       <BaseButton block size="large" class="sv" :loading="saving">{{ saving ? 'menyimpan…' : existing ? 'simpan perubahan produk' : 'tambah produk baru' }}</BaseButton>
     </form>
   </div>

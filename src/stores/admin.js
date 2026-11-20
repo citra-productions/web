@@ -7,7 +7,7 @@ export const adm = reactive({
   loaded: false, loading: false, error: '',
   dashboard: null, products: [], categories: [], packagings: [], portfolios: [], faqs: [], testimonies: [],
 })
-const withSrc = (o) => ({ ...o, photos: (o.photos || []).map((p) => ({ ...p, src: photoUrl(p.url) })) })
+const withSrc = (o) => ({ ...o, is_featured: !!o.is_featured, photos: (o.photos || []).map((p) => ({ ...p, src: photoUrl(p.url) })) })
 const SOURCES = {
   products: () => fetchAll('/admin/products', { auth: true }).then((l) => l.map(withSrc)),
   categories: () => fetchAll('/admin/categories', { auth: true }),
