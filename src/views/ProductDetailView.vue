@@ -13,9 +13,9 @@ const router = useRouter(); const { waLink } = useWhatsapp()
 const p = computed(() => state.products.find((x) => x.id === props.id))
 const loading = computed(() => state.status === 'idle' || state.status === 'loading')
 const photos = computed(() => (p.value ? p.value.photos : []))
-const specs = computed(() => p.value ? [['kategori', p.value.categoryName || '-'], ['packaging', p.value.packagings.map((k) => k.title).join(', ') || '-']] : [])
+const specs = computed(() => p.value ? [['Kategori', p.value.categoryName || '-'], ['Packaging', p.value.packagings.map((k) => k.title).join(', ') || '-']] : [])
 const wa = computed(() => p.value ? waLink(`Halo, saya tertarik dengan "${p.value.name}" (${priceLabel(p.value)}). Boleh minta info dan penawaran?`) : '#')
-const back = () => (window.history.length > 1 ? router.back() : router.push({ name: 'home', hash: '#katalog' }))
+const back = () => (window.history.length > 1 ? router.back() : router.push({ name: 'catalog' }))
 async function share() {
   const url = location.href
   try { if (navigator.share) { await navigator.share({ title: p.value.name, url }); return } await navigator.clipboard.writeText(url); toast('Tautan produk disalin.') }
@@ -26,7 +26,7 @@ async function share() {
   <div class="container dt">
     <button class="bk" @click="back"><AppIcon name="arrow-left" :size="18" />kembali</button>
     <p v-if="loading" class="muted ld">Memuat produk…</p>
-    <div v-else-if="!p" class="nf card"><h1>Produk tidak ditemukan</h1><p class="muted">Produk ini mungkin sudah dihapus atau disembunyikan.</p><BaseButton :as="'RouterLink'" :to="{ name: 'home', hash: '#katalog' }">Lihat katalog</BaseButton></div>
+    <div v-else-if="!p" class="nf card"><h1>Produk tidak ditemukan</h1><p class="muted">Produk ini mungkin sudah dihapus atau disembunyikan.</p><BaseButton :as="'RouterLink'" :to="{ name: 'catalog' }">Lihat katalog</BaseButton></div>
     <div v-else class="gr">
       <PhotoCarousel :photos="photos" :alt="p.name" :label="p.name" />
       <div class="if">

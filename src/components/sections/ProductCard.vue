@@ -17,7 +17,7 @@ async function onMenu(i) {
   if (i === 0) router.push(to.value)
   else if (i === 1) window.open(waLink(`Halo, saya tertarik dengan "${p.name}" (${priceLabel(p)}). Boleh minta info dan penawaran?`), '_blank', 'noopener')
   else {
-    const url = location.origin + location.pathname + router.resolve(to.value).href
+    const url = location.origin + router.resolve(to.value).href
     try { if (navigator.share) await navigator.share({ title: p.name, url }); else { await navigator.clipboard.writeText(url); toast('Tautan produk disalin.') } } catch (e) { if (e?.name !== 'AbortError') toast('Tidak bisa membagikan.', 'err') }
   }
 }

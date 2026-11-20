@@ -6,7 +6,7 @@ import { state } from '../../stores/store'
 import { formatPhone } from '../../utils/format'
 import { useWhatsapp } from '../../composables/useWhatsapp'
 const { waLink } = useWhatsapp()
-const nav = [['Beranda', { name: 'home' }], ['Katalog Produk', { name: 'home', hash: '#katalog' }], ['Portofolio', { name: 'home', hash: '#portofolio' }], ['Testimoni', { name: 'home', hash: '#testimoni' }], ['FAQ', { name: 'home', hash: '#faq' }]]
+const nav = [['Beranda', { name: 'home' }], ['Katalog Produk', { name: 'catalog' }], ['Portofolio', { name: 'home', hash: '#portofolio' }], ['Testimoni', { name: 'home', hash: '#testimoni' }], ['FAQ', { name: 'home', hash: '#faq' }]]
 const contacts = computed(() => {
   const s = state.site
   return [
