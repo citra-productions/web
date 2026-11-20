@@ -26,7 +26,7 @@ export const photoUrl = (u) => {
   if (!u) return ''
   if (/^(data:|blob:)/.test(u)) return u
   const url = /^https?:/.test(u) ? u : API_ORIGIN + u
-  return url + (url.includes('?') ? '&' : '?') + '+?v=3'
+  return url + (url.includes('?') ? '&' : '?') + 'v=3'
 }
 
 export async function api(path, { method = 'GET', body, form, auth = false } = {}) {
