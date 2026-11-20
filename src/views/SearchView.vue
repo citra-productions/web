@@ -19,7 +19,7 @@ const results = computed(() => {
   const s = q.value.trim().toLowerCase(); if (!s) return []
   return state.products.filter((p) => p.name.toLowerCase().includes(s) || p.categoryName.toLowerCase().includes(s) || p.description.toLowerCase().includes(s))
 })
-const back = () => (window.history.length > 1 ? router.back() : router.push({ name: 'home', hash: '#katalog' }))
+const back = () => (window.history.length > 1 ? router.back() : router.push({ name: 'catalog' }))
 onMounted(() => input.value?.focus())
 </script>
 <template>

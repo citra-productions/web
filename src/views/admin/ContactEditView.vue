@@ -38,12 +38,12 @@ async function save() {
 <template>
   <div class="a-wrap">
     <RouterLink :to="{ name: 'admin-contacts' }" class="bk"><AppIcon name="arrow-left" :size="14" />Kembali ke Kontak</RouterLink>
-    <h1>Kelola Footer / Kontak</h1>
+    <div class="a-head"><h2>Kelola Kontak</h2><span class="a-hint">Lima kolom ini tampil di website dan footer</span></div>
     <form class="card" novalidate @submit.prevent="ask">
       <h3>Info kontak</h3>
       <div class="a-row">
         <div><label class="label first" for="wa">Nomor WhatsApp <span v-if="f.whatsapp.trim() !== orig.whatsapp" class="chg">Diubah</span></label><input id="wa" v-model="f.whatsapp" class="input" :class="{ invalid: errs.whatsapp }" inputmode="tel" /><p v-if="errs.whatsapp" class="err">{{ errs.whatsapp }}</p></div>
-        <div><label class="label first" for="ig">Username Instagram <span v-if="f.instagram.trim() !== orig.instagram" class="chg">Diubah</span></label><input id="ig" v-model="f.instagram" class="input" :class="{ invalid: errs.instagram }" placeholder="@citra.production" /><p v-if="errs.instagram" class="err">{{ errs.instagram }}</p></div>
+        <div><label class="label first" for="ig">Username Instagram <span v-if="f.instagram.trim() !== orig.instagram" class="chg">Diubah</span></label><input id="ig" v-model="f.instagram" class="input" :class="{ invalid: errs.instagram }" placeholder="contoh: @citraproductions" /><p v-if="errs.instagram" class="err">{{ errs.instagram }}</p></div>
       </div>
       <label class="label" for="ad">Alamat lengkap <span v-if="f.address.trim() !== orig.address" class="chg">Diubah</span></label><textarea id="ad" v-model="f.address" class="input" :class="{ invalid: errs.address }" rows="3" maxlength="500" /><p v-if="errs.address" class="err">{{ errs.address }}</p>
       <label class="label" for="oh">Jam operasional <span v-if="f.hours.trim() !== orig.hours" class="chg">Diubah</span></label><input id="oh" v-model="f.hours" class="input" :class="{ invalid: errs.hours }" maxlength="255" placeholder="Senin-Sabtu, 08.00-17.00 WIB" /><p v-if="errs.hours" class="err">{{ errs.hours }}</p>
@@ -60,7 +60,7 @@ async function save() {
   </div>
 </template>
 <style scoped>
-.bk { display: inline-flex; gap: 6px; align-items: center; font-size: 11px; color: var(--muted); text-decoration: none; margin-bottom: 8px; } h1 { font-size: 20px; margin-bottom: 14px; } h3 { font-size: 13px; margin-bottom: 8px; }
+.bk { display: inline-flex; gap: 6px; align-items: center; font-size: 11px; color: var(--muted); text-decoration: none; margin-bottom: 8px; } h3 { font-size: 13px; margin-bottom: 8px; }
 .label.first { margin-top: 0; } .chg { background: var(--tint); color: var(--navy); font-size: 9px; padding: 1px 6px; border-radius: var(--r-4); margin-left: 4px; font-weight: 500; }
 .bar { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 18px; flex-wrap: wrap; } .pend { font-size: 11px; color: var(--muted); display: inline-flex; gap: 6px; align-items: center; } .pend i { width: 6px; height: 6px; border-radius: 50%; background: var(--navy); } .bt { display: flex; gap: 8px; }
 .b { padding: 9px 16px; border-radius: var(--r-6); border: 1px solid transparent; font-size: 12px; font-weight: 600; text-decoration: none; } .b:disabled { opacity: .6; } .b--out { background: #fff; border-color: var(--border); color: var(--text); } .b--navy { background: var(--navy); color: #fff; }

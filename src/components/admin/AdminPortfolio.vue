@@ -21,13 +21,13 @@ watch(total, (t) => { if (page.value > t) page.value = t })
 const form = ref(null), errs = ref({}), busy = ref(false), saving = ref(false), confirmSave = ref(false), del = ref(null)
 const now = new Date()
 const openAdd = () => { form.value = { id: null, title: '', description: '', month: now.getMonth() + 1, year: now.getFullYear(), featured: false, published: true, images: [], removed: [] }; errs.value = {} }
-const openEdit = (p) => { form.value = { id: p.id, title: p.title, description: p.description || '', month: p.event_month, year: p.event_year, featured: p.is_featured, published: p.is_published, images: p.photos.map((g) => ({ key: 's' + g.id, id: g.id, src: g.src, alt: g.alt_text })), removed: [] }; errs.value = {} }
+const openEdit = (p) => { form.value = { id: p.id, title: p.title, description: p.description || '', month: p.event_month, year: p.event_year, featured: p.is_featured, published: p.is_published, images: p.photos.map((g) => ({ key: 's' + g.id, id: g.id, src: g.src, alt: g.alt_text || '', origAlt: g.alt_text || '' })), removed: [] }; errs.value = {} }
 async function addImages() {
   const room = MAXIMG - form.value.images.length
   if (room <= 0) return toast(`Maksimal ${MAXIMG} gambar per portofolio.`, 'err')
   const files = await pickFiles({ multiple: true }); if (!files.length) return
   busy.value = true; const { images, errors } = await readImages(files, { max: room })
-  for (const src of images) form.value.images.push({ key: 'n' + uid(), src, blob: await dataUrlToBlob(src), alt: '' })
+  for (const src of images) form.value.images.push({ key: 'n' + uid(), src, blob: await dataUrlToBlob(src), alt: '', origAlt: '' })
   busy.value = false
   if (errors.length) toast(errors[0], 'err')
 }
@@ -43,7 +43,7 @@ async function doSave() {
   const f = form.value, wasNew = !f.id; saving.value = true
   try {
     await saveWithPhotos({
-      base: 'portfolios', kind: 'portfolio', id: f.id, photos: f.images, removedIds: f.removed, alt: f.title.trim().slice(0, 150), altDirty: false,
+      base: 'portfolios', kind: 'portfolio', id: f.id, photos: f.images, removedIds: f.removed, defaultAlt: f.title.trim().slice(0, 150),
       body: { title: f.title.trim(), description: f.description.trim() || null, event_year: Number(f.year), event_month: Number(f.month), is_featured: f.featured, is_published: f.published },
     })
     toast(wasNew ? 'Portofolio ditambahkan.' : 'Portofolio diperbarui.'); confirmSave.value = false; form.value = null

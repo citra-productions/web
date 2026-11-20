@@ -17,7 +17,7 @@ async function onMenu(i) {
   if (i === 0) router.push(to.value)
   else if (i === 1) window.open(waLink(`Halo, saya tertarik dengan "${p.name}" (${priceLabel(p)}). Boleh minta info dan penawaran?`), '_blank', 'noopener')
   else {
-    const url = location.origin + location.pathname + router.resolve(to.value).href
+    const url = location.origin + router.resolve(to.value).href
     try { if (navigator.share) await navigator.share({ title: p.name, url }); else { await navigator.clipboard.writeText(url); toast('Tautan produk disalin.') } } catch (e) { if (e?.name !== 'AbortError') toast('Tidak bisa membagikan.', 'err') }
   }
 }
@@ -26,7 +26,8 @@ async function onMenu(i) {
   <article class="pc" :class="`pc--${layout}`">
     <RouterLink :to="to" class="lk" :aria-label="`${product.name}, ${priceLabel(product)}`">
       <div class="im">
-        <img v-if="cover" :src="cover" :alt="product.altText || product.name" loading="lazy" />
+        <img v-if="cover" :src="cover.src" :alt="cover.alt || product.name" loading="lazy" />
+        <span v-if="product.featured && layout === 'grid'" class="fb"><AppIcon name="star" :size="10" />Pilihan</span>
         <div v-else class="ph"><AppIcon name="image" :size="22" /></div>
       </div>
       <div class="bd">
@@ -44,6 +45,7 @@ async function onMenu(i) {
 .im { width: 64px; height: 64px; flex-shrink: 0; border-radius: var(--r-6); overflow: hidden; background: var(--tint); } .im img, .ph { width: 100%; height: 100%; object-fit: cover; } .ph { display: flex; align-items: center; justify-content: center; color: var(--muted); }
 .bd { flex: 1; min-width: 0; } .ct { font-size: 11px; color: var(--muted); } h3 { font-size: 15px; font-weight: 700; margin: 1px 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .pr { font-size: 12px; font-weight: 700; color: var(--navy); }
 .km { position: absolute; top: 50%; right: 6px; transform: translateY(-50%); }
-.pc--grid .lk { flex-direction: column; align-items: stretch; gap: 6px; padding: 6px 6px 10px; } .pc--grid .im { width: 100%; height: auto; aspect-ratio: 1 / 1; }
+.pc--grid .lk { flex-direction: column; align-items: stretch; gap: 6px; padding: 6px 6px 10px; } .pc--grid .im { width: 100%; height: auto; aspect-ratio: 1 / 1; position: relative; }
 .pc--grid .km { top: 10px; right: 10px; transform: none; } .pc--grid .bd { padding: 0 2px; }
+.fb { position: absolute; left: 6px; top: 6px; display: inline-flex; align-items: center; gap: 3px; background: var(--navy); color: #fff; font-size: 10px; line-height: 16px; padding: 1px 6px; border-radius: var(--r-4); }
 </style>
