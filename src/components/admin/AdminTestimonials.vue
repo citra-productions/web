@@ -28,13 +28,13 @@ async function doDel() {
 </script>
 <template>
   <section id="testimoni" class="a-section">
-    <div class="a-head"><h2>Kelola Testimoni Pelanggan</h2></div>
+    <div class="a-head"><h2>Kelola Testimoni</h2><span class="a-hint">Moderasi testimoni dari pengunjung</span></div>
     <TabsBar v-model="tab" :tabs="tabs" />
 
     <template v-if="tab === 'live'">
-      <h3>Daftar Testimoni ({{ live.length }} item)</h3>
-      <p v-if="!live.length" class="muted emp">Belum ada testimoni yang tayang.</p>
-      <div class="gd">
+      <div class="hd"><h3>Daftar Testimoni ({{ live.length }} item)</h3></div>
+      <p v-if="!live.length" class="muted emp">Belum ada testimoni yang tayang. Testimoni baru muncul di tab Menunggu Persetujuan.</p>
+      <div class="live-list">
         <article v-for="t in live" :key="t.id" class="cd" :class="{ 'cd--off': t.status === 'withdrawn' }">
           <div class="who"><span class="av">{{ t.author_name.charAt(0) }}</span><strong>{{ t.author_name }}</strong></div>
           <p class="tx">{{ t.content }}</p>
@@ -78,8 +78,8 @@ async function doDel() {
   </section>
 </template>
 <style scoped>
-h3 { font-size: 14px; font-weight: 500; margin-bottom: 4px; } .nt { font-size: 11px; margin-bottom: 10px; } .emp { font-size: 13px; padding: 6px 0; }
-.gd { display: grid; gap: 10px; } .cd { background: #fff; border: 1px solid var(--border); border-radius: var(--r-8); padding: 12px; display: grid; gap: 8px; align-content: start; } .cd--off { background: var(--bg-soft); }
+h3 { font-size: 14px; font-weight: 500; margin-bottom: 4px; } .hd { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 4px; } .nt { font-size: 11px; margin-bottom: 10px; } .emp { font-size: 13px; padding: 6px 0; }
+.gd { display: grid; gap: 10px; } .live-list { display: grid; gap: 10px; } .cd { background: #fff; border: 1px solid var(--border); border-radius: var(--r-8); padding: 12px; display: grid; gap: 8px; align-content: start; } .cd--off { background: var(--bg-soft); }
 .who { display: flex; align-items: center; gap: 6px; font-size: 12px; } .av { width: 18px; height: 18px; border-radius: 50%; background: #E7E8EB; font-size: 10px; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; }
 .tx { font-size: 12px; color: #3a4150; } .tx--mute { color: var(--muted); } .row { display: flex; justify-content: space-between; align-items: center; } .lk { display: inline-flex; gap: 4px; align-items: center; font-size: 11px; color: var(--muted); }
 .pt { font-size: 10px; color: var(--navy); background: var(--tint); border-radius: var(--r-4); padding: 1px 8px; justify-self: start; }

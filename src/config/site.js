@@ -3,5 +3,5 @@ export const siteConfig = {
   maxPhotosPerProduct: 5,
   maxPhotosPerPortfolio: 6,
   maxUploadBytes: 2 * 1024 * 1024, // 2MB per file, sesuai teks di desain (server menerima sampai 5MB)
-  businessName: 'Citra Production',
+  businessName: 'Citra Productions',
 }

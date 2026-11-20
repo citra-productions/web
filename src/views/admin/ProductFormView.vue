@@ -87,7 +87,7 @@ const back = () => router.push({ name: 'admin-products' })
     <button class="bk" @click="back"><AppIcon name="arrow-left" :size="18" />kembali</button>
     <div v-if="missing" class="card nf"><p>Produk tidak ditemukan.</p><BaseButton @click="back">Kembali ke daftar</BaseButton></div>
     <form v-else class="card" novalidate @submit.prevent="save">
-      <div class="a-head"><h1>{{ existing ? 'Edit' : 'Tambah' }} Product</h1><span class="a-hint">Form input produk</span></div>
+      <div class="a-head"><h1>{{ existing ? 'Edit' : 'Tambah' }} Produk</h1><span class="a-hint">Form input produk</span></div>
       <label class="label first">Foto produk</label>
 
       <button v-if="!photos.length" type="button" class="dz" :disabled="busy" @click="addPhotos">
@@ -112,7 +112,7 @@ const back = () => router.push({ name: 'admin-products' })
       </div>
       <div class="a-row">
         <div><label class="label" for="hm">Harga maksimal (opsional)</label><input id="hm" v-model="form.priceMax" type="number" min="0" inputmode="numeric" class="input" :class="{ invalid: errs.priceMax }" placeholder="Untuk rentang harga" /><p v-if="errs.priceMax" class="err">{{ errs.priceMax }}</p></div>
-        <div><label class="label" for="ct">Kategori Product</label>
+        <div><label class="label" for="ct">Kategori Produk</label>
           <select id="ct" v-model="form.categoryId" class="input" :class="{ invalid: errs.categoryId }"><option value="">Pilih kategori</option><option v-for="c in adm.categories" :key="c.id" :value="c.id">{{ c.title }}</option></select><p v-if="errs.categoryId" class="err">{{ errs.categoryId }}</p></div>
       </div>
       <label class="label">Jenis Packaging (boleh lebih dari satu)</label>
