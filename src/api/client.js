@@ -21,7 +21,13 @@ export class ApiError extends Error {
 // URL dari `links.next` bisa berupa URL penuh atau path yang diawali "/".
 const resolve = (path) => (/^https?:\/\//.test(path) ? path : path.startsWith('/api/') ? API_ORIGIN + path : BASE_URL + path)
 // Foto dikembalikan sebagai path relatif (mis. /storage/...) → tempelkan alamat server.
-export const photoUrl = (u) => (!u ? '' : /^(https?:|data:|blob:)/.test(u) ? u : API_ORIGIN + u)
+// `v` dinaikkan saat file demo diganti agar cache immutable tidak menyajikan gambar lama.
+export const photoUrl = (u) => {
+  if (!u) return ''
+  if (/^(data:|blob:)/.test(u)) return u
+  const url = /^https?:/.test(u) ? u : API_ORIGIN + u
+  return url + (url.includes('?') ? '&' : '?') + 'v=2'
+}
 
 export async function api(path, { method = 'GET', body, form, auth = false } = {}) {
   const headers = { Accept: 'application/json' }
