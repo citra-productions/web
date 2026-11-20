@@ -21,7 +21,11 @@ const menuFor = (p) => [{ label: 'edit produk', icon: 'edit' }, { label: p.is_pu
 async function onMenu(i, p) {
   try {
     if (i === 0) router.push({ name: 'admin-product-edit', params: { id: p.id } })
-    else if (i === 1) { await setProductPublished(p.id, !p.is_published); toast(p.is_published ? 'Produk ditampilkan di katalog.' : 'Produk disembunyikan dari katalog.') }
+    else if (i === 1) {
+      const next = !p.is_published
+      await setProductPublished(p.id, next)
+      toast(next ? 'Produk ditampilkan di katalog.' : 'Produk disembunyikan dari katalog.')
+    }
     else del.value = p
   } catch (e) { toast(errMsg(e), 'err') }
 }
@@ -29,14 +33,14 @@ async function confirmDel() { try { await removeProduct(del.value.id); toast('Pr
 </script>
 <template>
   <section id="produk" class="a-section">
-    <div class="a-head"><h2>Kelola Product</h2></div>
+    <div class="a-head"><h2>Kelola Produk</h2></div>
     <div class="card add">
-      <div class="a-head"><h3>Tambah Product</h3><span class="a-hint">Form input produk</span></div>
+      <div class="a-head"><h3>Tambah Produk</h3><span class="a-hint">Form input produk</span></div>
       <BaseButton as="RouterLink" :to="{ name: 'admin-product-new' }" block class="nb"><template #icon><AppIcon name="plus" :size="16" /></template>tambah produk baru</BaseButton>
     </div>
 
     <h3 class="lh">Daftar Produk ({{ adm.products.length }} item)</h3>
-    <p v-if="!adm.products.length" class="muted emp">Belum ada produk.</p>
+    <p v-if="!adm.products.length" class="muted emp">Belum ada produk. Tambahkan produk pertama lewat formulir di atas.</p>
     <div class="gr">
       <article v-for="p in paged" :key="p.id" class="pc" :class="{ off: !p.is_published }">
         <div class="im">

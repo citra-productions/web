@@ -1,6 +1,6 @@
 export const publicLinks = [
   { label: 'Beranda', to: { name: 'home' } },
-  { label: 'Katalog Produk', to: { name: 'home', hash: '#katalog' } },
+  { label: 'Katalog Produk', to: { name: 'catalog' } },
   { label: 'Portofolio', to: { name: 'home', hash: '#portofolio' } },
   { label: 'Testimoni', to: { name: 'home', hash: '#testimoni' } },
   { label: 'FAQ', to: { name: 'home', hash: '#faq' } },

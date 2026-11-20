@@ -27,7 +27,15 @@ async function publish() {
 async function reject(f) { if (await run(() => patchFaq(f.id, { status: 'rejected' }), 'Pertanyaan ditolak.')) ans.value = null }
 async function doHide() { await run(() => patchFaq(hide.value.id, { status: 'withdrawn' }), 'FAQ disembunyikan dari website.'); hide.value = null }
 async function show(f) { await run(() => patchFaq(f.id, { status: 'published' }), 'FAQ ditampilkan kembali.') }
-async function doDel() { await run(() => removeFaq(del.value.id), 'FAQ dihapus.'); del.value = null }
+// FAQ yang masih tayang harus ditarik dulu; API menolak hapus langsung untuk status published.
+async function doDel() {
+  const f = del.value; if (!f) return
+  await run(async () => {
+    if (f.status === 'published') await patchFaq(f.id, { status: 'withdrawn' })
+    await removeFaq(f.id)
+  }, 'FAQ dihapus.')
+  del.value = null
+}
 async function create() {
   if (nq.value.trim().length < 5 || na.value.trim().length < 3) { err.value = 'Isi pertanyaan dan jawaban.'; return }
   if (await run(() => createFaq({ question: nq.value.trim(), answer: na.value.trim() }), 'FAQ ditambahkan.')) { add.value = false; nq.value = ''; na.value = '' }
@@ -47,7 +55,7 @@ async function create() {
         <div class="ac">
           <button v-if="f.status === 'published'" class="bt bt--navy-o" @click="hide = f"><AppIcon name="eye-off" :size="14" />Sembunyikan</button>
           <button v-else class="bt bt--navy-o" @click="show(f)"><AppIcon name="eye" :size="14" />Tampilkan</button>
-          <button v-if="f.status === 'withdrawn'" class="bt bt--red-o" @click="del = f"><AppIcon name="trash" :size="14" />Hapus</button>
+          <button class="bt bt--red-o" @click="del = f"><AppIcon name="trash" :size="14" />Hapus</button>
         </div>
       </article>
     </template>
@@ -94,7 +102,7 @@ async function create() {
       <template #footer><button class="bt bt--out" @click="add = false">Batal</button><button class="bt bt--green" :disabled="busy" @click="create">Simpan & Tayangkan</button></template>
     </ModalBox>
     <ActionConfirm :open="!!hide" title="Sembunyikan FAQ ini?" message="FAQ tidak akan tampil di halaman publik, tetapi tetap tersimpan dan bisa ditampilkan kembali kapan saja." item-label="FAQ yang dipilih" :item-text="hide?.question" icon="eye-off" tone="primary" confirm-label="Ya, Sembunyikan" @confirm="doHide" @cancel="hide = null" />
-    <ActionConfirm :open="!!del" title="Hapus FAQ ini?" message="FAQ akan dihapus permanen dan tidak bisa dikembalikan." item-label="FAQ yang dipilih" :item-text="del?.question" @confirm="doDel" @cancel="del = null" />
+    <ActionConfirm :open="!!del" :title="del?.status === 'published' ? 'Tarik lalu hapus FAQ ini?' : 'Hapus FAQ ini?'" :message="del?.status === 'published' ? 'FAQ masih tayang. Saat dikonfirmasi, FAQ akan ditarik dari halaman publik lebih dulu, lalu dihapus permanen. Setelah dihapus tidak bisa dikembalikan.' : 'FAQ akan dihapus permanen dan tidak bisa dikembalikan.'" item-label="FAQ yang dipilih" :item-text="del?.question" @confirm="doDel" @cancel="del = null" />
   </section>
 </template>
 <style scoped>

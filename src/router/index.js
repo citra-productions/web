@@ -1,16 +1,18 @@
-import { createRouter, createWebHashHistory } from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
 import { auth, verify } from '../stores/auth'
 import { loadPublic } from '../stores/store'
 import PublicLayout from '../views/PublicLayout.vue'
 import HomeView from '../views/HomeView.vue'
+import CatalogView from '../views/CatalogView.vue'
 import ProductDetailView from '../views/ProductDetailView.vue'
 import SearchView from '../views/SearchView.vue'
 
 const router = createRouter({
-  history: createWebHashHistory(),
+  history: createWebHistory(),
   routes: [
     { path: '/', component: PublicLayout, children: [
       { path: '', name: 'home', component: HomeView },
+      { path: 'katalog', name: 'catalog', component: CatalogView },
       { path: 'cari', name: 'search', component: SearchView },
       { path: 'produk/:id', name: 'product', component: ProductDetailView, props: true },
     ] },
@@ -29,7 +31,7 @@ const router = createRouter({
     { path: '/:pathMatch(.*)*', redirect: '/' },
   ],
   scrollBehavior(to, _from, saved) {
-    if (to.hash) return { el: to.hash, top: 84, behavior: 'smooth' }
+    if (/^#[A-Za-z][\w-]*$/.test(to.hash)) return { el: to.hash, top: 84, behavior: 'smooth' }
     return saved || { top: 0 }
   },
 })

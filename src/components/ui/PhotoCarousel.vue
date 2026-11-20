@@ -2,18 +2,20 @@
 import { ref, computed, watch } from 'vue'
 import AppIcon from './AppIcon.vue'
 import { useSwipe } from '../../composables/useSwipe'
-const props = defineProps({ images: { type: Array, default: () => [] }, alt: { type: String, default: '' }, label: { type: String, default: '' } })
+// `photos` = [{ src, alt }]. Alt dibaca per foto supaya tiap gambar punya deskripsi sendiri.
+const props = defineProps({ photos: { type: Array, default: () => [] }, alt: { type: String, default: '' }, label: { type: String, default: '' } })
 const i = ref(0)
-const n = computed(() => props.images.length)
+const n = computed(() => props.photos.length)
 watch(n, () => { i.value = 0 })
 const next = () => { if (n.value) i.value = (i.value + 1) % n.value }
 const prev = () => { if (n.value) i.value = (i.value - 1 + n.value) % n.value }
 const swipe = useSwipe(next, prev)
+const altOf = (k) => props.photos[k]?.alt || `${props.alt || props.label || 'Foto'} (foto ${k + 1} dari ${n.value})`
 </script>
 <template>
   <div class="pc">
     <div class="main" v-on="swipe">
-      <img v-if="n" :src="images[i]" :alt="`${alt} (foto ${i + 1} dari ${n})`" />
+      <img v-if="n" :src="photos[i].src" :alt="altOf(i)" />
       <div v-else class="ph empty"><AppIcon name="image" :size="40" /></div>
       <span v-if="n" class="cnt">{{ i + 1 }}/{{ n }} {{ label.toLowerCase() }}</span>
       <template v-if="n > 1">
@@ -22,7 +24,7 @@ const swipe = useSwipe(next, prev)
       </template>
     </div>
     <div v-if="n > 1" class="th">
-      <button v-for="(src, k) in images" :key="k" class="t" :class="{ on: k === i }" :aria-label="`Lihat foto ${k + 1}`" @click="i = k"><img :src="src" alt="" /></button>
+      <button v-for="(p, k) in photos" :key="p.id || k" class="t" :class="{ on: k === i }" :aria-label="`Lihat foto ${k + 1}`" @click="i = k"><img :src="p.src" alt="" /></button>
     </div>
   </div>
 </template>
