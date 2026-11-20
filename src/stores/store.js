@@ -45,7 +45,7 @@ export const packagingList = computed(() => {
 })
 export const nameOfCategory = (slug) => state.categories.find((c) => c.id === slug)?.name || ''
 export const countInCategory = (slug) => state.products.filter((p) => p.categoryId === slug).length
-export const coverOf = (p) => p.photos[0]?.src || ''
+export const coverOf = (p) => p.photos[0] || null
 
 // ---------- kirim dari pengunjung (masuk antrean moderasi admin) ----------
 export const submitQuestion = ({ q }) => api('/faqs', { method: 'POST', body: { question: q.trim() } })

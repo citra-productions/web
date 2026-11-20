@@ -21,7 +21,11 @@ const menuFor = (p) => [{ label: 'edit produk', icon: 'edit' }, { label: p.is_pu
 async function onMenu(i, p) {
   try {
     if (i === 0) router.push({ name: 'admin-product-edit', params: { id: p.id } })
-    else if (i === 1) { await setProductPublished(p.id, !p.is_published); toast(p.is_published ? 'Produk ditampilkan di katalog.' : 'Produk disembunyikan dari katalog.') }
+    else if (i === 1) {
+      const next = !p.is_published
+      await setProductPublished(p.id, next)
+      toast(next ? 'Produk ditampilkan di katalog.' : 'Produk disembunyikan dari katalog.')
+    }
     else del.value = p
   } catch (e) { toast(errMsg(e), 'err') }
 }

@@ -26,7 +26,7 @@ async function onMenu(i) {
   <article class="pc" :class="`pc--${layout}`">
     <RouterLink :to="to" class="lk" :aria-label="`${product.name}, ${priceLabel(product)}`">
       <div class="im">
-        <img v-if="cover" :src="cover" :alt="product.altText || product.name" loading="lazy" />
+        <img v-if="cover" :src="cover.src" :alt="cover.alt || product.name" loading="lazy" />
         <div v-else class="ph"><AppIcon name="image" :size="22" /></div>
       </div>
       <div class="bd">

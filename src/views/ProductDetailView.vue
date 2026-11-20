@@ -12,7 +12,7 @@ const props = defineProps({ id: String })
 const router = useRouter(); const { waLink } = useWhatsapp()
 const p = computed(() => state.products.find((x) => x.id === props.id))
 const loading = computed(() => state.status === 'idle' || state.status === 'loading')
-const imgs = computed(() => (p.value ? p.value.photos.map((x) => x.src) : []))
+const photos = computed(() => (p.value ? p.value.photos : []))
 const specs = computed(() => p.value ? [['kategori', p.value.categoryName || '-'], ['packaging', p.value.packagings.map((k) => k.title).join(', ') || '-']] : [])
 const wa = computed(() => p.value ? waLink(`Halo, saya tertarik dengan "${p.value.name}" (${priceLabel(p.value)}). Boleh minta info dan penawaran?`) : '#')
 const back = () => (window.history.length > 1 ? router.back() : router.push({ name: 'home', hash: '#katalog' }))
@@ -28,7 +28,7 @@ async function share() {
     <p v-if="loading" class="muted ld">Memuat produk…</p>
     <div v-else-if="!p" class="nf card"><h1>Produk tidak ditemukan</h1><p class="muted">Produk ini mungkin sudah dihapus atau disembunyikan.</p><BaseButton :as="'RouterLink'" :to="{ name: 'home', hash: '#katalog' }">Lihat katalog</BaseButton></div>
     <div v-else class="gr">
-      <PhotoCarousel :images="imgs" :alt="p.photos[0]?.alt || p.name" :label="p.name" />
+      <PhotoCarousel :photos="photos" :alt="p.name" :label="p.name" />
       <div class="if">
         <p class="pr">{{ priceLabel(p) }}</p>
         <h1>{{ p.name }}</h1>
