@@ -29,7 +29,7 @@ export async function loadPublic() {
     ])
     state.categories = cats.map((c) => ({ id: c.slug, name: c.title }))
     state.products = prods.map(mapProduct)
-    state.featuredProducts = featured.map(mapProduct)
+    state.featuredProducts = featured.map(mapProduct).filter((p) => p.featured)
     state.portfolios = ports.map(mapPortfolio)
     state.faqs = faqs.map(mapFaq)
     state.testimonies = tests.map(mapTestimony)
