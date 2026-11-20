@@ -22,7 +22,7 @@ const maps = computed(() => `https://www.google.com/maps/search/?api=1&query=${e
         <p>{{ p.description }}</p>
         <div class="ac">
           <BaseButton as="a" variant="outline" :href="maps" target="_blank" rel="noopener"><template #icon><AppIcon name="map-pin" :size="16" /></template>Maps</BaseButton>
-          <BaseButton as="RouterLink" :to="{ name: 'home', hash: '#katalog' }">Lihat produk</BaseButton>
+          <BaseButton as="RouterLink" :to="{ name: 'catalog' }">Lihat produk</BaseButton>
         </div>
       </div>
     </div>

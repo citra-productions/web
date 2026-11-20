@@ -5,7 +5,7 @@ import { api, fetchAll, photoUrl } from '../api/client'
 export const state = reactive({
   status: 'idle', // idle | loading | ready | error
   error: '',
-  categories: [], products: [], portfolios: [], faqs: [], testimonies: [],
+  categories: [], products: [], featuredProducts: [], portfolios: [], faqs: [], testimonies: [],
   site: { about: '', address: '', hours: '', whatsapp: '', instagram: '' },
 })
 
@@ -15,7 +15,7 @@ const mapProduct = (p) => ({
   priceMin: p.price_min || 0, priceMax: p.price_max || 0,
   categoryId: p.category?.slug || '', categoryName: p.category?.title || '',
   packagings: p.packagings || [], packagingIds: (p.packagings || []).map((x) => x.id),
-  photos: (p.photos || []).map(photo),
+  photos: (p.photos || []).map(photo), featured: !!p.is_featured,
 })
 const mapPortfolio = (p) => ({ id: p.id, title: p.title, description: p.description || '', year: p.event_year, month: p.event_month, featured: p.is_featured, images: (p.photos || []).map(photo) })
 const mapFaq = (f) => ({ id: f.id, q: f.question, a: f.answer })
@@ -24,11 +24,12 @@ const mapTestimony = (t) => ({ id: t.id, name: t.author_name, context: t.author_
 export async function loadPublic() {
   state.status = 'loading'; state.error = ''
   try {
-    const [cats, prods, ports, faqs, tests, site] = await Promise.all([
-      fetchAll('/categories'), fetchAll('/products'), fetchAll('/portfolios'), fetchAll('/faqs'), fetchAll('/testimonies'), api('/site-contents'),
+    const [cats, prods, featured, ports, faqs, tests, site] = await Promise.all([
+      fetchAll('/categories'), fetchAll('/products'), fetchAll('/products?featured=true'), fetchAll('/portfolios'), fetchAll('/faqs'), fetchAll('/testimonies'), api('/site-contents'),
     ])
     state.categories = cats.map((c) => ({ id: c.slug, name: c.title }))
     state.products = prods.map(mapProduct)
+    state.featuredProducts = featured.map(mapProduct).filter((p) => p.featured)
     state.portfolios = ports.map(mapPortfolio)
     state.faqs = faqs.map(mapFaq)
     state.testimonies = tests.map(mapTestimony)
@@ -45,7 +46,7 @@ export const packagingList = computed(() => {
 })
 export const nameOfCategory = (slug) => state.categories.find((c) => c.id === slug)?.name || ''
 export const countInCategory = (slug) => state.products.filter((p) => p.categoryId === slug).length
-export const coverOf = (p) => p.photos[0]?.src || ''
+export const coverOf = (p) => p.photos[0] || null
 
 // ---------- kirim dari pengunjung (masuk antrean moderasi admin) ----------
 export const submitQuestion = ({ q }) => api('/faqs', { method: 'POST', body: { question: q.trim() } })

@@ -7,7 +7,7 @@ export const adm = reactive({
   loaded: false, loading: false, error: '',
   dashboard: null, products: [], categories: [], packagings: [], portfolios: [], faqs: [], testimonies: [],
 })
-const withSrc = (o) => ({ ...o, photos: (o.photos || []).map((p) => ({ ...p, src: photoUrl(p.url) })) })
+const withSrc = (o) => ({ ...o, is_featured: !!o.is_featured, photos: (o.photos || []).map((p) => ({ ...p, src: photoUrl(p.url) })) })
 const SOURCES = {
   products: () => fetchAll('/admin/products', { auth: true }).then((l) => l.map(withSrc)),
   categories: () => fetchAll('/admin/categories', { auth: true }),
@@ -50,15 +50,19 @@ export async function uploadPhoto(base, id, blob, alt) {
 export const deletePhoto = (kind, photoId) => api(`/admin/${kind}-photos/${photoId}`, { ...A, method: 'DELETE' })
 export const renamePhoto = (kind, photoId, alt_text) => api(`/admin/${kind}-photos/${photoId}`, { ...A, method: 'PATCH', body: { alt_text } })
 export const reorderPhotos = (base, id, ids) => api(`/admin/${base}/${id}/photos/order`, { ...A, method: 'PUT', body: { ids } })
-// Simpan produk/portofolio beserta perubahan fotonya. `photos` = urutan akhir: {id?, src, blob?, alt}.
-export async function saveWithPhotos({ base, kind, id, body, photos, removedIds, alt, altDirty }) {
+// Simpan produk/portofolio beserta perubahan fotonya.
+// `photos` = urutan akhir: {id?, src, blob?, alt, origAlt}. Alt disimpan per foto; `defaultAlt` hanya dipakai bila alt foto kosong.
+export async function saveWithPhotos({ base, kind, id, body, photos, removedIds = [], defaultAlt = '' }) {
   const saved = (await api(id ? `/admin/${base}/${id}` : `/admin/${base}`, { ...A, method: id ? 'PATCH' : 'POST', body })).data
   const oid = saved.id
   for (const pid of removedIds) await deletePhoto(kind, pid)
   const finalIds = []
   for (const p of photos) {
-    if (p.id) { if (altDirty && p.alt !== alt) await renamePhoto(kind, p.id, alt); finalIds.push(p.id) }
-    else finalIds.push((await uploadPhoto(base, oid, p.blob, alt)).id)
+    const alt = (p.alt || '').trim().slice(0, 150) || defaultAlt
+    if (p.id) {
+      if (alt !== (p.origAlt || '')) await renamePhoto(kind, p.id, alt)
+      finalIds.push(p.id)
+    } else finalIds.push((await uploadPhoto(base, oid, p.blob, alt)).id)
   }
   const before = (saved.photos || []).map((p) => p.id).filter((x) => !removedIds.includes(x))
   if (finalIds.length > 1 && finalIds.join() !== before.join()) await reorderPhotos(base, oid, finalIds)

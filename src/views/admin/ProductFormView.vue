@@ -18,11 +18,13 @@ const missing = !!props.id && !existing
 const form = reactive({
   title: existing?.title || '', priceMin: existing?.price_min ?? '', priceMax: existing?.price_max ?? '',
   categoryId: existing?.category_id ?? '', packagingIds: [...(existing?.packaging_ids || [])],
-  description: existing?.description || '', altText: existing?.photos?.[0]?.alt_text || '', published: existing ? existing.is_published : true,
+  description: existing?.description || '', published: existing ? existing.is_published : true,
+  featured: existing ? !!existing.is_featured : false,
 })
-// Foto: {key, id?, src, blob?, alt}. id = sudah ada di server; blob = baru, diunggah saat "simpan".
-const photos = ref((existing?.photos || []).map((p) => ({ key: 's' + p.id, id: p.id, src: p.src, alt: p.alt_text })))
-const removed = ref([]), altDirty = ref(false)
+// Foto: {key, id?, src, blob?, alt, origAlt}. id = sudah ada di server; blob = baru, diunggah saat "simpan".
+// Alt disimpan per foto; origAlt dipakai untuk tahu apakah alt perlu dikirim ulang.
+const photos = ref((existing?.photos || []).map((p) => ({ key: 's' + p.id, id: p.id, src: p.src, alt: p.alt_text || '', origAlt: p.alt_text || '' })))
+const removed = ref([])
 const active = ref(0), busy = ref(false), saving = ref(false), errs = reactive({})
 const max = siteConfig.maxPhotosPerProduct
 const cur = computed(() => photos.value[active.value])
@@ -34,7 +36,7 @@ async function addPhotos() {
   busy.value = true
   const { images, errors } = await readImages(files, { max: room })
   const start = photos.value.length
-  for (const src of images) photos.value.push({ key: 'n' + uid(), src, blob: await dataUrlToBlob(src), alt: '' })
+  for (const src of images) photos.value.push({ key: 'n' + uid(), src, blob: await dataUrlToBlob(src), alt: '', origAlt: '' })
   if (images.length) active.value = start
   busy.value = false
   if (errors.length) toast(errors[0], 'err')
@@ -65,13 +67,13 @@ async function save() {
   const hasMin = form.priceMin !== '' && form.priceMin !== null
   const min = hasMin ? Number(form.priceMin) : null
   const max2 = hasMin ? (form.priceMax === '' || form.priceMax === null ? min : Number(form.priceMax)) : null // harga tunggal = rentang min..min
-  const body = { title: t, description: form.description.trim() || null, category_id: form.categoryId || null, price_min: min, price_max: max2, packaging_ids: form.packagingIds }
+  const body = { title: t, description: form.description.trim() || null, category_id: form.categoryId || null, price_min: min, price_max: max2, packaging_ids: form.packagingIds, is_featured: form.featured }
   if (existing) body.is_published = form.published
   saving.value = true
   try {
     const saved = await saveWithPhotos({
       base: 'products', kind: 'product', id: existing?.id, body, photos: photos.value, removedIds: removed.value,
-      alt: (form.altText.trim() || t).slice(0, 150), altDirty: altDirty.value,
+      defaultAlt: t.slice(0, 150),
     })
     if (!existing && form.published) await setProductPublished(saved.id, true)
     toast(existing ? 'Perubahan produk disimpan.' : 'Produk baru ditambahkan.')
@@ -85,7 +87,7 @@ const back = () => router.push({ name: 'admin-products' })
     <button class="bk" @click="back"><AppIcon name="arrow-left" :size="18" />kembali</button>
     <div v-if="missing" class="card nf"><p>Produk tidak ditemukan.</p><BaseButton @click="back">Kembali ke daftar</BaseButton></div>
     <form v-else class="card" novalidate @submit.prevent="save">
-      <div class="a-head"><h1>{{ existing ? 'Edit' : 'Tambah' }} Product</h1><span class="a-hint">Form input produk</span></div>
+      <div class="a-head"><h1>{{ existing ? 'Edit' : 'Tambah' }} Produk</h1><span class="a-hint">Form input produk</span></div>
       <label class="label first">Foto produk</label>
 
       <button v-if="!photos.length" type="button" class="dz" :disabled="busy" @click="addPhotos">
@@ -94,7 +96,7 @@ const back = () => router.push({ name: 'admin-products' })
       </button>
       <div v-else>
         <div class="mp">
-          <img :src="cur.src" :alt="form.altText || form.title || 'Foto produk'" />
+          <img :src="cur.src" :alt="cur.alt || form.title || 'Foto produk'" />
           <span class="tg">foto {{ active + 1 }}/{{ photos.length }}{{ cur.blob ? ' · baru' : '' }}</span>
           <div class="kmw"><KebabMenu :items="photoMenu" dark align="left" label="Menu foto" @select="onPhotoMenu" /></div>
         </div>
@@ -110,7 +112,7 @@ const back = () => router.push({ name: 'admin-products' })
       </div>
       <div class="a-row">
         <div><label class="label" for="hm">Harga maksimal (opsional)</label><input id="hm" v-model="form.priceMax" type="number" min="0" inputmode="numeric" class="input" :class="{ invalid: errs.priceMax }" placeholder="Untuk rentang harga" /><p v-if="errs.priceMax" class="err">{{ errs.priceMax }}</p></div>
-        <div><label class="label" for="ct">Kategori Product</label>
+        <div><label class="label" for="ct">Kategori Produk</label>
           <select id="ct" v-model="form.categoryId" class="input" :class="{ invalid: errs.categoryId }"><option value="">Pilih kategori</option><option v-for="c in adm.categories" :key="c.id" :value="c.id">{{ c.title }}</option></select><p v-if="errs.categoryId" class="err">{{ errs.categoryId }}</p></div>
       </div>
       <label class="label">Jenis Packaging (boleh lebih dari satu)</label>
@@ -120,9 +122,14 @@ const back = () => router.push({ name: 'admin-products' })
       </div>
       <label class="label" for="ds">Deskripsi produk</label>
       <textarea id="ds" v-model="form.description" class="input" rows="4" placeholder="Jelaskan bahan, ukuran, dan keunggulan produk (tampil di halaman detail)" maxlength="2000" />
-      <label class="label" for="alt">Alternating text (teks pengganti foto)</label>
-      <textarea id="alt" v-model="form.altText" class="input" rows="2" placeholder="Deskripsi singkat foto untuk pembaca layar. Contoh: Plakat kayu ukir warna cokelat" maxlength="150" @input="altDirty = true" />
+      <template v-if="cur">
+        <label class="label" for="alt">Teks alternatif foto {{ active + 1 }} (alt)</label>
+        <textarea id="alt" v-model="cur.alt" class="input" rows="2" :placeholder="`Deskripsi foto ${active + 1} untuk pembaca layar. Contoh: Plakat kayu ukir warna cokelat`" maxlength="150" />
+        <p class="fnh">Alt diisi terpisah untuk tiap foto. Bila dikosongkan, dipakai nama produk.</p>
+      </template>
       <label class="chk"><input v-model="form.published" type="checkbox" /> Tayangkan produk di katalog</label>
+      <label class="chk"><input v-model="form.featured" type="checkbox" /> Tampilkan di beranda</label>
+      <p class="fnh">Produk pilihan tampil di bagian “Produk Pilihan” pada beranda. Hanya produk yang tayang yang muncul di sana.</p>
       <BaseButton block size="large" class="sv" :loading="saving">{{ saving ? 'menyimpan…' : existing ? 'simpan perubahan produk' : 'tambah produk baru' }}</BaseButton>
     </form>
   </div>
@@ -136,4 +143,5 @@ const back = () => router.push({ name: 'admin-products' })
 .th { display: flex; gap: 8px; margin-top: 10px; overflow-x: auto; } .t { flex: 0 0 auto; width: 56px; height: 56px; padding: 0; border-radius: var(--r-6); border: 2px solid transparent; overflow: hidden; background: var(--tint); } .t img { width: 100%; height: 100%; object-fit: cover; } .t.on { border-color: var(--navy); } .t.add { border: 1.5px dashed #CBD0D8; background: #fff; color: var(--muted); display: flex; align-items: center; justify-content: center; }
 .pk { display: flex; flex-wrap: wrap; gap: 8px; } .pkc { display: inline-flex; gap: 6px; align-items: center; font-size: 13px; padding: 6px 10px; border: 1px solid var(--border); border-radius: var(--r-8); background: #fff; } .pe { font-size: 12px; }
 .chk { display: flex; gap: 8px; align-items: center; font-size: 14px; margin-top: 16px; } .sv { margin-top: 18px; border-radius: var(--r-8); } .nf { text-align: center; display: grid; gap: 12px; justify-items: center; }
+.fnh { font-size: 11px; color: var(--muted); margin-top: 4px; }
 </style>

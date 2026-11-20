@@ -1,6 +1,6 @@
-# Citra Production
+# Citra Productions
 
-Website katalog Citra Production (Vue 3 + Vite) yang tersambung ke backend Laravel (REST API `/api/v1`).
+Website katalog Citra Productions (Vue 3 + Vite) yang tersambung ke backend Laravel (REST API `/api/v1`).
 
 ## Menjalankan
 
@@ -29,7 +29,7 @@ mise run dev
 
 Buka `http://localhost:5173`. Jika alamat backend berbeda, ubah `VITE_API_BASE_URL` di `.env.local`. Nilai default `http://localhost:8080/api/v1`; untuk API lokal dari `mise run serve`, gunakan `http://localhost:8000/api/v1`.
 
-Admin: buka `http://localhost:5173/#/admin`, masuk dengan email dan password admin.
+Admin: buka `http://localhost:5173/admin`, masuk dengan email dan password admin.
 
 ## Build dan deploy
 
@@ -49,7 +49,8 @@ Domain produksi: `https://cp.atalariq.dev`.
 
 - Status moderasi: `pending → published | rejected`, `published ↔ withdrawn`; `rejected` final. Hapus hanya untuk yang ditolak/disembunyikan.
 - Produk perlu kategori dan harga sebelum bisa ditayangkan. Harga diisi min dan max (satu harga = min sama dengan max).
-- Foto: JPG/PNG/WebP, dikompres otomatis di browser; alt text diisi satu kali per produk/portofolio.
+- Foto: JPG/PNG/WebP, dikompres otomatis di browser; teks alternatif diisi terpisah untuk tiap foto.
+- Produk pilihan: centang "Tampilkan di beranda" di form produk. Beranda mengambil `GET /products?featured=true`; bagian Produk Pilihan tidak dirender bila kosong.
 - Gambar hero: letakkan file `src/assets/hero.jpg` (atau png/webp); tidak diatur lewat API.
 - Urutan FAQ belum bisa diatur dari antarmuka admin.
 - `npm run build` menghasilkan folder `dist`.
